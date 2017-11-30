@@ -1,0 +1,54 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:w="urn:import:nl.yogh.gwt.wui.widget"
+  xmlns:p="urn:import:io.yogh.bitcoin.wui.widget" xmlns:c="urn:import:io.yogh.bitcoin.wui.dumpster.component">
+  <ui:with field='i18n' type='io.yogh.bitcoin.wui.i18n.ApplicationMessages' />
+  <ui:with field='res' type='io.yogh.bitcoin.wui.resources.R.ApplicationResource' />
+  <ui:style>
+    .input {
+    display: none;
+    }
+
+    .label {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    }
+
+    .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transition: .2s;
+    }
+
+    .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .2s;
+    }
+
+    .input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+    }
+
+    .input:checked + .slider:before {
+    transform: translateX(26px);
+    }
+  </ui:style>
+  <g:HTMLPanel>
+    <label class="{style.label}">
+      <input type="checkbox" ui:field="input" class="{style.input}" />
+      <span class="{style.slider}" ui:field="slider" />
+    </label>
+  </g:HTMLPanel>
+</ui:UiBinder>
+ 
