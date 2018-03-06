@@ -13,8 +13,16 @@ public class DaemonBootstrapperImpl extends EventBusProxy implements DaemonBoots
   }
 
   @Override
-  public void init() {
+  public void init(final Runnable complete) {
     exceptionDaemon.init();
     observer.init();
+
+    if (autoComplete()) {
+      complete.run();
+    }
+  }
+
+  protected boolean autoComplete() {
+    return true;
   }
 }
