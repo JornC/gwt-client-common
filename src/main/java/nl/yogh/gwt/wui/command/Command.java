@@ -10,4 +10,10 @@ public interface Command<H> {
   }
 
   Event<?> getEvent();
+
+  default void silence() {
+    setSilent(true);
+  }
+
+  void setSilent(boolean silence);
 }
