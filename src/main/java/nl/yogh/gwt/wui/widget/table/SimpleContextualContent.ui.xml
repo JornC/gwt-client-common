@@ -1,0 +1,27 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui">
+  <ui:with field='i18n' type='nl.overheid.aerius.shared.i18n.AeriusMessages' />
+  <ui:style>
+  @def colorBorder #BBB;
+  .container {
+    background-color: white;
+    border: 1px solid colorBorder;
+    border-radius: 5px;
+    margin-left: -1px;
+    /* TODO make this dynamic */
+    max-height: 500px;
+    overflow: auto;
+  }
+  .title {
+    font-weight: bold;
+    line-height: 24px;
+    background-color: #e9edf0;
+    border-bottom: 1px solid #bbb;
+    padding: 5px;
+  }
+  </ui:style>
+  <g:FlowPanel ui:field="container" addStyleNames="{style.container}">
+    <g:Label ui:field="title" styleName="{style.title}" visible="false" />
+    <g:SimplePanel ui:field="content" />
+  </g:FlowPanel>
+</ui:UiBinder> 
