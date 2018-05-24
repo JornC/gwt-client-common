@@ -26,6 +26,10 @@ public class SwitchPanel extends FlowPanel {
     setWidgetVisible(activeWidget, true);
   }
 
+  public boolean isShowing(final Widget widg) {
+    return widg == activeWidget;
+  }
+
   private void setWidgetVisible(final Widget widget, final boolean visible) {
     widget.setVisible(visible);
   }
@@ -35,5 +39,10 @@ public class SwitchPanel extends FlowPanel {
     w.setVisible(false);
 
     super.add(w);
+  }
+
+  public void hideWidget() {
+    setWidgetVisible(activeWidget, false);
+    activeWidget = null;
   }
 }
