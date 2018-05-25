@@ -3,6 +3,8 @@ package nl.yogh.gwt.wui.widget.table;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.stream.Collectors;
 
 import com.google.gwt.uibinder.client.UiChild;
 import com.google.gwt.user.client.ui.Composite;
@@ -95,6 +97,12 @@ public abstract class DivTable<T, R extends DivTableRow> extends Composite imple
    * Whether or not this DivTable is fitted with a key provider that offers safe equality determination.
    */
   protected boolean safeEquals;
+
+  private RowReplacer<T, R> replacer;
+  
+  public interface RowReplacer<T, R> {
+    void apply(T item, R row);
+  }
 
   /**
    * Create a simple default DivTable.
@@ -350,15 +358,33 @@ public abstract class DivTable<T, R extends DivTableRow> extends Composite imple
     // be possible to replace rows. As a consequence, IDT needs to stop using HasValueChangeHandler<Boolean> on top
     // of its rows to handle row selections, moving to some custom thing instead (DTRs would be implementing HasValue<T>
     // instead of HasValue<Boolean>)
-    // if (!safeEquals) {
-    // Clear previous values.
-    clear();
-    // Add the row data.
-    addRowData(lst);
-    // } else {
-    // // Replace the row data, adding/replacing only if it doesn't already exist
-    // replaceRowData(lst);
-    // }
+    if (!safeEquals) {
+      // Clear previous values.
+      clear();
+      // Add the row data.
+      addRowData(lst);
+    } else {
+      // // Replace the row data, adding/replacing only if it doesn't already exist
+      replaceRowData(lst);
+    }
+  }
+
+  private void replaceRowData(Collection<T> lst) {
+    Iterator<T> it = lst.iterator();
+    int i = 0;
+    for (; i < rows.size(); i++) {
+      T item = it.next();
+
+      R row = rows.getWidget(i);
+
+      replaceRow(row, item);
+    }
+    
+    addRowData(lst.stream().skip(i).collect(Collectors.toList()));
+  }
+
+  private void replaceRow(R row, T item) {
+    replacer.apply(item, row);
   }
 
   public void hideNoContent() {
@@ -570,6 +596,10 @@ public abstract class DivTable<T, R extends DivTableRow> extends Composite imple
     createRow(comp, object);
 
     return comp;
+  }
+
+  public void setReplacementFunction(RowReplacer<T, R> replacer) {
+    this.replacer = replacer;
   }
 
   protected abstract R createDivTableRow(T object);

@@ -5,7 +5,7 @@ import java.util.Iterator;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 
-public class TypedFlowPanel<R extends DivTableRow> implements IsWidget {
+public class TypedFlowPanel<R extends DivTableRow> implements IsWidget, Iterable<R> {
   private final FlowPanel panel = new FlowPanel();
 
   public void add(final R child) {
@@ -20,7 +20,7 @@ public class TypedFlowPanel<R extends DivTableRow> implements IsWidget {
   public R getWidget(final int index) {
     return (R) panel.getWidget(index);
   }
-
+  
   public int size() {
     return panel.getWidgetCount();
   }
