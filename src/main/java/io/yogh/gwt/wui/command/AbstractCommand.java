@@ -12,6 +12,11 @@ public abstract class AbstractCommand<E> extends GenericEvent implements Command
   }
 
   @Override
+  public void setSilent(final boolean silent) {
+    this.silent = silent;
+  }
+
+  @Override
   public boolean isSilent() {
     return silent;
   }

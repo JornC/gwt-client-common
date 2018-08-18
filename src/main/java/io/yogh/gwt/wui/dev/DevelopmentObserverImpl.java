@@ -1,7 +1,6 @@
 package io.yogh.gwt.wui.dev;
 
 import com.google.gwt.core.client.GWT;
-import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
@@ -13,13 +12,13 @@ public class DevelopmentObserverImpl extends AbstractLogger implements Developme
 
   interface DevelopmentObserverImplEventBinder extends EventBinder<DevelopmentObserverImpl> {}
 
-  @Inject
-  public DevelopmentObserverImpl(final EventBus eventBus) {
-    EVENT_BINDER.bindEventHandlers(this, eventBus);
-  }
-
   @EventHandler
   public void onPlaceChangeEvent(final PlaceChangeEvent e) {
     log("Place change event: " + e.getClass().getSimpleName());
+  }
+
+  @Override
+  public void setEventBus(final EventBus eventBus) {
+    EVENT_BINDER.bindEventHandlers(this, eventBus);
   }
 }

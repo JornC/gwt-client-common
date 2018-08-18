@@ -8,22 +8,14 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException;
 import com.google.gwt.user.client.rpc.InvocationException;
 import com.google.gwt.user.client.rpc.StatusCodeException;
-import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.UmbrellaException;
 
 import io.yogh.gwt.wui.util.NotificationUtil;
 
 public class ExceptionDaemonImpl implements ExceptionDaemon {
-  private final EventBus eventBus;
-
-  @Inject
-  public ExceptionDaemonImpl(final EventBus eventBus) {
-    this.eventBus = eventBus;
-  }
-
   @Override
-  public void init() {
+  public void setEventBus(final EventBus eventBus) {
     GWT.setUncaughtExceptionHandler(e -> {
       final Throwable cause = findCause(e);
 

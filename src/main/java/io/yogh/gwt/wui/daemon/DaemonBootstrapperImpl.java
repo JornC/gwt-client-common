@@ -1,6 +1,7 @@
 package io.yogh.gwt.wui.daemon;
 
 import com.google.inject.Inject;
+import com.google.web.bindery.event.shared.EventBus;
 
 import io.yogh.gwt.wui.dev.DevelopmentObserver;
 import io.yogh.gwt.wui.util.EventBusProxy;
@@ -16,13 +17,7 @@ public class DaemonBootstrapperImpl extends EventBusProxy implements DaemonBoots
   }
 
   @Override
-  public void init() {}
-
-  @Override
   public void init(final Runnable complete) {
-    exceptionDaemon.init();
-    observer.init();
-
     if (autoComplete()) {
       complete.run();
     }
@@ -30,5 +25,10 @@ public class DaemonBootstrapperImpl extends EventBusProxy implements DaemonBoots
 
   protected boolean autoComplete() {
     return true;
+  }
+
+  @Override
+  public void setEventBus(final EventBus eventBus) {
+    super.setEventBus(eventBus, exceptionDaemon, observer);
   }
 }
