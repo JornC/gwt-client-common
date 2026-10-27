@@ -17,8 +17,8 @@
 package nl.aerius.wui.history;
 
 import com.google.gwt.core.shared.GWT;
-import com.google.gwt.place.shared.PlaceHistoryHandler.Historian;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.binder.EventBinder;
 import com.google.web.bindery.event.shared.binder.EventHandler;
@@ -31,6 +31,7 @@ import nl.aerius.wui.place.Place;
 import nl.aerius.wui.place.PlaceController;
 import nl.aerius.wui.place.TokenizedPlace;
 
+@Singleton
 public class HistoryManagerImpl implements HistoryManager {
   interface HistoryManagerImplEventBinder extends EventBinder<HistoryManagerImpl> {}
 
@@ -42,13 +43,18 @@ public class HistoryManagerImpl implements HistoryManager {
 
   private final EventBus eventBus;
 
-  private final Historian historian;
+  private final HTML5Historian historian;
 
   private final PlaceHistoryMapper mapper;
 
+  /**
+   * True while the place for the browser's current entry is being entered, so that place replaces the entry.
+   */
+  private boolean arriving;
+
   @Inject
   public HistoryManagerImpl(@DefaultPlace final ApplicationPlace defaultPlace, final PlaceController placeController, final EventBus eventBus,
-      final Historian historian, final PlaceHistoryMapper mapper) {
+      final HTML5Historian historian, final PlaceHistoryMapper mapper) {
     this.defaultPlace = defaultPlace;
     this.placeController = placeController;
     this.historian = historian;
@@ -58,7 +64,9 @@ public class HistoryManagerImpl implements HistoryManager {
     EVENT_BINDER.bindEventHandlers(this, eventBus);
 
     historian.addValueChangeHandler(event -> {
-      handleHistoryToken(event.getValue(), false);
+      if (!handleHistoryToken(event.getValue())) {
+        historian.revert();
+      }
     });
   }
 
@@ -67,13 +75,21 @@ public class HistoryManagerImpl implements HistoryManager {
     final Place value = e.getValue();
 
     if (value instanceof TokenizedPlace) {
-      historian.newItem(mapper.getToken((TokenizedPlace) value), false);
+      final String token = mapper.getToken((TokenizedPlace) value);
+
+      if (arriving) {
+        historian.replaceItem(token);
+      } else {
+        historian.newItem(token, false);
+      }
     }
+
+    arriving = false;
   }
 
   @Override
   public void handleCurrentHistory() {
-    handleHistoryToken(historian.getToken(), false);
+    handleHistoryToken(historian.getToken());
   }
 
   @Override
@@ -88,7 +104,10 @@ public class HistoryManagerImpl implements HistoryManager {
     return mapper.getPlace(token);
   }
 
-  private void handleHistoryToken(final String token, final boolean silent) {
+  /**
+   * Goes to the place for the token, and returns false if the place change was cancelled.
+   */
+  private boolean handleHistoryToken(final String token) {
     TokenizedPlace newPlace = null;
 
     if (token == null || token.isEmpty()) {
@@ -103,7 +122,12 @@ public class HistoryManagerImpl implements HistoryManager {
       newPlace = defaultPlace;
     }
 
-    placeController.goTo(newPlace, silent);
+    arriving = true;
+    placeController.goTo(newPlace, false);
+    final boolean entered = !arriving;
+    arriving = false;
+
     eventBus.fireEvent(new NotifyHistoryEvent(newPlace));
+    return entered;
   }
 }
