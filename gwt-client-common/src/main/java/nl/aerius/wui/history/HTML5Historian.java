@@ -40,7 +40,7 @@ public class HTML5Historian implements Historian, HasValueChangeHandlers<String>
    */
   private int index;
   private int lastStep;
-  private boolean reverting;
+  private int revertIndex = UNKNOWN_INDEX;
 
   @Inject
   public HTML5Historian(final EventBus eventBus) {
@@ -97,7 +97,7 @@ public class HTML5Historian implements Historian, HasValueChangeHandlers<String>
       return;
     }
 
-    reverting = true;
+    revertIndex = index - lastStep;
     go(-lastStep);
   }
 
@@ -120,12 +120,12 @@ public class HTML5Historian implements Historian, HasValueChangeHandlers<String>
 
   private void onPopState(final int newIndex) {
     final boolean known = newIndex != UNKNOWN_INDEX;
+    final boolean reverted = known && newIndex == revertIndex;
     lastStep = known ? newIndex - index : 0;
     index = known ? newIndex : index;
+    revertIndex = UNKNOWN_INDEX;
 
-    if (reverting) {
-      reverting = false;
-    } else {
+    if (!reverted) {
       ValueChangeEvent.fire(this, getToken());
     }
   }
